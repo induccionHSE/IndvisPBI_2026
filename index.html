@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inducción HSEQ – Administración Bogotá</title>
+  <style>
+    /* --- ESTILOS GENERALES --- */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente más moderna */
+      line-height: 1.6;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      padding-bottom: 80px; /* Espacio para los botones fijos */
+    }
+
+    header {
+      background-color: #003366;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .logo-pbi {
+      height: 45px;
+      background-color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+
+    /* --- BARRA DE PROGRESO --- */
+    #barraProgreso {
+      height: 6px;
+      background-color: #007BFF;
+      width: 0%;
+      position: fixed;
+      top: 65px; /* Justo debajo del header */
+      left: 0;
+      z-index: 999;
+      transition: width 0.4s ease;
+      box-shadow: 0 2px 5px rgba(0,123,255,0.3);
+    }
+
+    /* --- CONTENEDOR PRINCIPAL --- */
+    .container {
+      background-color: #fff;
+      padding: 30px; /* Reducido un poco para móviles */
+      max-width: 900px;
+      margin: 30px auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      min-height: 60vh;
+    }
+
+    section {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- TIPOGRAFÍA Y ELEMENTOS --- */
+    h1, h2, h3 { color: #006599; }
+    
+    a { color: #007BFF; text-decoration: none; font-weight: bold; }
+    a:hover { text-decoration: underline; }
+
+    ul { padding-left: 20px; }
+    li { margin-bottom: 8px; }
+
+    /* --- TARJETAS E IMÁGENES --- */
+    .card {
+      background: #f8fbff;
+      border-left: 4px solid #007BFF;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .imagen-seccion { text-align: center; margin: 20px 0; }
+    .imagen-seccion img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .img-superior-derecha {
+      float: right;
+      width: 80px;
+      margin: 0 0 10px 15px;
+    }
+    
+    .img-superior-derecha img { width: 100%; height: auto; }
+
+    /* --- ACCORDEONES (DETAILS) --- */
+    details {
+      background-color: #eef5f9;
+      border: 1px solid #dbebf7;
+      border-left: 4px solid #006599;
+      padding: 10px 15px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    details[open] { background-color: #e3f2fd; }
+    details summary { font-weight: bold; color: #004d73; outline: none; }
+
+    /* --- BOTONES DE NAVEGACIÓN (STICKY) --- */
+    .nav-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: white;
+      padding: 15px 0;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    button {
+      background-color: #006599;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      padding: 12px 30px;
+      cursor: pointer;
+      border: none;
+      border-radius: 25px; /* Botones redondeados modernos */
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    button:hover { background-color: #004d73; transform: scale(1.05); }
+    button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+    /* --- RESPONSIVE --- */
+    @media screen and (max-width: 768px) {
+      .grid-dos-columnas, .comportamiento-grid, .vial-grid {
+        display: grid;
+        grid-template-columns: 1fr !important; /* Fuerza una columna en móvil */
+        gap: 15px;
+      }
+      .img-superior-derecha { float: none; display: block; margin: 0 auto 15px auto; text-align: center; }
+      .container { padding: 20px; margin: 15px; }
+      #barraProgreso { top: 60px; } /* Ajuste altura header móvil */
+    }
+
+    /* Estilo para checkboxes grandes en móvil */
+    input[type="checkbox"] {
+      transform: scale(1.3);
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div><strong>Inducción HSEQ Visitantes</strong></div>
+  <img src="https://i.postimg.cc/bY006YKT/Logo-PBI.png" alt="Logo PBI" class="logo-pbi">
+</header>
+
+<div id="barraProgreso"></div>
+
+<div class="container">
+
+  <section class="active">
+    <div class="seccion-contenido" style="text-align: center;">
+      <h2>Bienvenido a PBI</h2>
+      <p>Esta inducción te guiará sobre los aspectos esenciales de seguridad, salud y ambiente durante tu visita a nuestras oficinas administrativas.</p>
+      <img src="https://i.postimg.cc/B6GYKPGW/Logo-portada-induccion-corporativa-PBI.png" alt="Portada" style="max-width: 100%; border-radius: 10px; margin: 20px 0;">
+      <p><strong>Duración estimada:</strong> 5 minutos.<br>
+      La seguridad es un valor innegociable para nosotros.</p>
+      <p style="color: #007BFF;">¡Gracias por tu compromiso!</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="img-superior-derecha">
+      <img src="https://i.postimg.cc/CLSFNhyN/LOGO-PBI-CASCO-BLANCO.png" alt="Personaje PBI">
+    </div>
+    <h2>2. Objetivo de la Inducción</h2>
+    <p>Garantizar que tu visita sea segura y cumpla con nuestros estándares corporativos:</p>
+    <div class="card">
+      <ul>
+        <li>✔️ Prevenir accidentes en áreas de oficina.</li>
+        <li>✔️ Conocer cómo actuar en caso de emergencia.</li>
+        <li>✔️ Mantener una cultura de respeto y orden.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="img-superior-derecha">
+        <img src="https://i.postimg.cc/CLSFNhyN/LOGO-PBI-CASCO-BLANCO.png" alt="Personaje PBI">
+    </div>
+    <h2>3. Políticas Corporativas</h2>
+    <p>Nuestra actuación se rige por estos principios fundamentales:</p>
+
+    <details>
+      <summary>📌 Política Integral HSEQ</summary>
+      <p>Compromiso con la protección de la vida, el ambiente y la calidad. <a href="https://drive.google.com/open?id=1To8ksi0_bzYq_hzyExQr8FiCRMw2FOy4" target="_blank">Ver PDF</a></p>
+    </details>
+
+    <details>
+      <summary>🚫 Prevención de Alcohol y Drogas</summary>
+      <p>Ambientes de trabajo sanos y libres de sustancias psicoactivas. <a href="https://drive.google.com/open?id=19_eRtxWZ1DvwmY0pnxqImaBqKB7KbdRr" target="_blank">Ver PDF</a></p>
+    </details>
+
+    <details>
+      <summary>🚗 Seguridad Vial</summary>
+      <p>Movilidad segura para prevenir accidentes de tránsito. <a href="https://drive.google.com/open?id=1NAmg1SaRJ_Rzt3DeqWVO9znXfWT3OZOA" target="_blank">Ver PDF</a></p>
+    </details>
+  </section>
+
+  <section>
+    <div class="img-superior-derecha">
+        <img src="https://i.postimg.cc/CLSFNhyN/LOGO-PBI-CASCO-BLANCO.png" alt="Personaje PBI">
+    </div>
+    <h2>4. Riesgos en la Oficina</h2>
+    <p>Aunque parece un entorno seguro, mantente alerta ante:</p>
+    
+    <div class="comportamiento-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+      <div class="card">
+        <h4>🔌 Riesgo Eléctrico</h4>
+        <p>Cables sueltos o sobrecarga de enchufes. No manipules conexiones sin autorización.</p>
+      </div>
+      <div class="card">
+        <h4>🪜 Caídas a Nivel</h4>
+        <p>Pisos mojados o escaleras. Usa siempre el pasamanos y no corras.</p>
+      </div>
+      <div class="card">
+        <h4>🚶 Golpes</h4>
+        <p>Contra puertas de vidrio o cajones abiertos. Evita usar el celular al caminar.</p>
+      </div>
+      <div class="card">
+        <h4>🖥️ Ergonomía</h4>
+        <p>Si vas a trabajar por horas, ajusta tu silla y pantalla para evitar fatiga.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. Recomendaciones para Contratistas</h2>
+    <p>Si vienes a realizar trabajos locativos o técnicos:</p>
+    <div class="accordion">
+       <details>
+         <summary>📋 Permiso de Trabajo</summary>
+         <p>Obligatorio para tareas de riesgo. Debe estar firmado antes de iniciar.</p>
+       </details>
+       <details>
+         <summary>🦺 EPP (Protección Personal)</summary>
+         <p>Uso obligatorio de casco, gafas, botas, etc., según la tarea.</p>
+       </details>
+       <details>
+         <summary>🚧 Señalización</summary>
+         <p>Delimita tu área de trabajo para proteger a los demás.</p>
+       </details>
+    </div>
+    <div style="background: #ffebeb; padding: 10px; border-left: 5px solid red; margin-top: 15px;">
+        <strong>⛔ PROHIBIDO:</strong> Fumar, bloquear salidas de emergencia o trabajar sin autorización.
+    </div>
+  </section>
+
+  <section>
+    <div class="img-superior-derecha">
+        <img src="https://i.postimg.cc/CLSFNhyN/LOGO-PBI-CASCO-BLANCO.png" alt="Personaje PBI">
+    </div>
+    <h2>6. Gestión Ambiental</h2>
+    <p>Ayúdanos a cuidar el planeta separando los residuos correctamente:</p>
+
+    <div class="comportamiento-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+        <div class="card" style="border-left-color: #333;">
+            <h4 style="color:#333;">⬛ Negro</h4>
+            <p>Servilletas sucias, residuos sanitarios, no aprovechables.</p>
+        </div>
+        <div class="card" style="border-left-color: #fff; border: 1px solid #ccc;">
+            <h4 style="color:#666;">⬜ Blanco</h4>
+            <p>Papel limpio, cartón, plástico seco, vidrio.</p>
+        </div>
+        <div class="card" style="border-left-color: #2e7d32;">
+            <h4 style="color:#2e7d32;">🟩 Verde</h4>
+            <p>Residuos orgánicos (restos de comida).</p>
+        </div>
+    </div>
+    <p style="margin-top:15px;">💡 Apaga la luz si eres el último en salir de una sala.</p>
+  </section>
+
+  <section>
+    <div class="img-superior-derecha">
+        <img src="https://i.postimg.cc/CLSFNhyN/LOGO-PBI-CASCO-BLANCO.png" alt="Personaje PBI">
+    </div>
+    <h2>7. Plan de Emergencias</h2>
+    <p>En caso de alarma sonora o instrucción de evacuación:</p>
+    
+    <div class="accordion">
+        <details>
+            <summary>🚫 No uses el ascensor</summary>
+            <p>Utiliza siempre las escaleras de emergencia.</p>
+        </details>
+        <details>
+            <summary>🚶 Evacúa con calma</summary>
+            <p>No corras, no grites, no te devuelvas.</p>
+        </details>
+        <details>
+            <summary>📍 Punto de Encuentro</summary>
+            <p>Dirígete al punto externo señalizado (Detrás del CC Santa Ana).</p>
+        </details>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <h3>📌 Plano de Evacuación</h3>
+        <img src="https://i.postimg.cc/kGj7FnH7/PLANO-OFICINA.png" alt="Plano de evacuación" style="max-width: 100%; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <p style="font-size: 0.8em; color: gray;">Identifica las rutas verdes más cercanas.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>8. Tipos de Extintores</h2>
+    <p>Solo úsalos si sabes cómo y el fuego es incipiente.</p>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+        
+        <div class="card" style="flex: 1 1 250px; border-left-color: #f9c922;">
+            <h4>🟡 Multipropósito (ABC)</h4>
+            <p>Para cartón, papel, madera y fuegos comunes.</p>
+            <img src="https://i.postimg.cc/Bny0bGmN/EXTINTOR-TIPO-ABC.jpg" style="height: 100px; display:block; margin:0 auto;" alt="ABC">
+        </div>
+
+        <div class="card" style="flex: 1 1 250px; border-left-color: white; border: 1px solid #ccc;">
+            <h4>⚪ Solkaflam (Agente Limpio)</h4>
+            <p>Ideal para <strong>computadores y servidores</strong>. No deja residuos ni daña los equipos.</p>
+            <img src="https://i.postimg.cc/y6hj6dLd/Solkaflam.png" style="height: 100px; display:block; margin:0 auto;" alt="Solkaflam">
+        </div>
+
+        <div class="card" style="flex: 1 1 250px; border-left-color: #cc0000;">
+            <h4>🔴 CO₂ (Dióxido de Carbono)</h4>
+            <p>Para tableros eléctricos y líquidos inflamables. ¡Cuidado! Sale muy frío.</p>
+            <img src="https://i.postimg.cc/V6fDcJXh/TIPO-CO2.png" style="height: 100px; display:block; margin:0 auto;" alt="CO2">
+        </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="img-superior-derecha">
+        <img src="https://i.postimg.cc/CLSFNhyN/LOGO-PBI-CASCO-BLANCO.png" alt="Personaje PBI">
+    </div>
+    <h2>9. Reporte de Condiciones</h2>
+    <p>Si ves algo inseguro (un cable pelado, una baldosa suelta), repórtalo.</p>
+    <div style="text-align: center;">
+        <img class="qr" src="https://i.postimg.cc/0Nhp4dDd/Captura-de-pantalla-2025-06-17-093430.png" alt="QR Reporte" style="width: 180px;">
+        <p>Escanea este QR para llenar una tarjeta de aporte. ¡Tu observación previene accidentes!</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>10. Normas de Comportamiento</h2>
+    <div class="comportamiento-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div class="card">🚫 No ingresar a áreas restringidas sin autorización.</div>
+        <div class="card">📵 No tomar fotos ni videos dentro de las oficinas.</div>
+        <div class="card">🆔 Portar siempre tu identificación visible.</div>
+        <div class="card">🔇 Mantener un tono de voz moderado.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>11. Seguridad Vial</h2>
+    <p>Al llegar o salir de nuestras oficinas:</p>
+    <ul class="card">
+        <li>Cruza siempre por las cebras y puentes peatonales.</li>
+        <li>No chatees mientras cruzas la calle.</li>
+        <li>Toma taxis o servicios en puntos seguros e iluminados.</li>
+    </ul>
+  </section>
+
+  <section id="seccion-verificacion">
+    <div class="img-superior-derecha">
+        <img src="https://i.postimg.cc/CLSFNhyN/LOGO-PBI-CASCO-BLANCO.png" alt="Personaje PBI">
+    </div>
+    <h2>12. Verificación Final</h2>
+    <p>Por favor, confirma que has comprendido los puntos clave antes de ingresar:</p>
+    
+    <div class="card" style="background-color: #eaf4ff;">
+      <ul style="list-style: none; padding: 0;">
+        <li><label><input type="checkbox" id="check1"> ✅ Entiendo los riesgos de mi visita.</label></li>
+        <li><label><input type="checkbox" id="check2"> ✅ Identifiqué las rutas de evacuación.</label></li>
+        <li><label><input type="checkbox" id="check3"> ✅ Me comprometo a cumplir las normas.</label></li>
+        <li><label><input type="checkbox" id="check4"> ✅ Sé a quién contactar en emergencia.</label></li>
+      </ul>
+    </div>
+    <p id="msg-error" style="color: red; display: none; font-weight: bold; text-align: center;">⚠️ Debes marcar todas las casillas para finalizar.</p>
+  </section>
+
+  <section>
+    <div style="text-align: center;">
+        <img src="https://i.postimg.cc/bY006YKT/Logo-PBI.png" alt="Logo PBI" style="width: 150px; margin-bottom: 20px;">
+        <h2>¡Inducción Finalizada!</h2>
+        <p>Gracias por ser parte de nuestra cultura de seguridad.</p>
+        
+        <p>Para registrar formalmente tu inducción, por favor realiza la evaluación:</p>
+        
+        <a href="https://forms.gle/dYWQrnwranyo6eEU9" target="_blank" 
+           style="display: inline-block; background: #28a745; color: white; padding: 15px 30px; border-radius: 8px; font-size: 18px; margin-top: 10px; box-shadow: 0 4px 10px rgba(40,167,69,0.3);">
+           📝 Ir a la Evaluación
+        </a>
+        
+        <br><br>
+        <p style="font-size: 0.9em; color: #777;">Puedes cerrar esta ventana después de la evaluación.</p>
+    </div>
+  </section>
+
+</div> <div class="nav-container">
+  <button id="btnAnterior" onclick="prevSection()">Anterior</button>
+  <button id="btnSiguiente" onclick="nextSection()">Siguiente</button>
+</div>
+
+<script>
+  let current = 0;
+  const sections = document.querySelectorAll("section");
+  const btnAnterior = document.getElementById("btnAnterior");
+  const btnSiguiente = document.getElementById("btnSiguiente");
+  const barra = document.getElementById("barraProgreso");
+  const errorMsg = document.getElementById("msg-error");
+
+  function updateView() {
+    // Mostrar sección actual
+    sections.forEach((s, i) => {
+      s.classList.toggle("active", i === current);
+    });
+
+    // Controlar visibilidad de botones
+    btnAnterior.style.display = (current === 0) ? "none" : "block";
+    
+    // Si es la última sección, ocultar botón Siguiente (o cambiar texto)
+    if (current === sections.length - 1) {
+        btnSiguiente.style.display = "none";
+    } else {
+        btnSiguiente.style.display = "block";
+        btnSiguiente.textContent = (current === sections.length - 2) ? "Finalizar" : "Siguiente";
+    }
+
+    // Actualizar barra de progreso
+    const progreso = ((current + 1) / sections.length) * 100;
+    barra.style.width = progreso + "%";
+
+    // Scroll arriba suavemente al cambiar sección
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function nextSection() {
+    // VALIDACIÓN SECCIÓN 12 (Checkboxes)
+    // Usamos el ID para asegurar que estamos en la sección correcta
+    const seccionVerificacion = document.getElementById("seccion-verificacion");
+    
+    if (sections[current] === seccionVerificacion) {
+        const checks = seccionVerificacion.querySelectorAll("input[type='checkbox']");
+        let todosMarcados = true;
+        
+        checks.forEach(c => {
+            if (!c.checked) todosMarcados = false;
+        });
+
+        if (!todosMarcados) {
+            errorMsg.style.display = "block";
+            // Pequeña vibración visual (opcional)
+            navigator.vibrate?.(200); 
+            return; // Detiene el avance
+        } else {
+            errorMsg.style.display = "none";
+        }
+    }
+
+    if (current < sections.length - 1) {
+      current++;
+      updateView();
+    }
+  }
+
+  function prevSection() {
+    if (current > 0) {
+      current--;
+      updateView();
+    }
+  }
+
+  // Inicializar
+  document.addEventListener("DOMContentLoaded", updateView);
+</script>
+
+</body>
+</html>
