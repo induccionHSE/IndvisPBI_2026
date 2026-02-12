@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Inducción HSEQ – Administración Bogotá</title>
+  <title>Inducción HSEQ – Interactiva</title>
   <style>
     /* --- ESTILOS GENERALES --- */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
-      background-color: #f4f6f9;
+      background-color: #f0f2f5;
       margin: 0;
       padding: 0;
-      padding-bottom: 90px; /* Espacio reservado para los botones fijos */
+      padding-bottom: 100px;
     }
 
+    /* --- HEADER CON CRONÓMETRO --- */
     header {
       background-color: #003366;
       color: white;
@@ -25,23 +26,41 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
 
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    
     .logo-pbi {
-      height: 45px;
+      height: 40px;
       background-color: white;
-      padding: 5px 10px;
+      padding: 4px;
       border-radius: 4px;
+    }
+
+    /* Estilo del Cronómetro */
+    #timer-badge {
+      background-color: #007BFF;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-family: monospace;
+      font-size: 16px;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 0 10px rgba(0,123,255,0.5);
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     /* --- BARRA DE PROGRESO --- */
     #barraProgreso {
       height: 6px;
-      background-color: #007BFF;
+      background: linear-gradient(90deg, #007BFF, #00c6ff);
       width: 0%;
       position: fixed;
-      top: 65px;
+      top: 60px; /* Ajustado a la altura del header */
       left: 0;
       z-index: 999;
       transition: width 0.4s ease;
@@ -51,101 +70,68 @@
     .container {
       background-color: #fff;
       padding: 25px;
-      max-width: 900px;
-      margin: 20px auto;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      max-width: 800px;
+      margin: 30px auto;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      animation: slideUp 0.5s ease-out;
     }
 
-    section { display: none; animation: fadeIn 0.5s ease-in-out; }
-    section.active { display: block; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    h1, h2, h3 { color: #006599; }
-    a { color: #007BFF; text-decoration: none; font-weight: bold; }
-    ul { padding-left: 20px; }
+    section { display: none; }
+    section.active { display: block; animation: fadeIn 0.4s ease-in-out; }
     
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    h1, h2, h3 { color: #004d73; }
+    
+    /* --- TARJETAS --- */
     .card {
-      background: #f8fbff;
+      background: white;
+      border: 1px solid #e1e4e8;
       border-left: 4px solid #007BFF;
       padding: 15px;
       margin-bottom: 15px;
       border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+      transition: transform 0.2s;
     }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 
-    .img-superior-derecha { float: right; width: 70px; margin: 0 0 10px 15px; }
-    .img-superior-derecha img { width: 100%; height: auto; }
-
-    /* --- TIEMPO DE LECTURA (NUEVO) --- */
-    .tiempo-lectura {
-      display: inline-block;
-      background-color: #fff3cd;
-      color: #856404;
-      padding: 4px 10px;
-      border-radius: 15px;
-      font-size: 13px;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-
-    /* --- QUIZ (NUEVO) --- */
-    .quiz-container {
-      background-color: #f8f9fa;
-      border: 1px solid #dee2e6;
-      border-left: 4px solid #28a745; /* Verde para diferenciar de info normal */
-      border-radius: 8px;
-      padding: 20px;
-      margin: 25px 0;
-    }
-    .quiz-opcion {
-      display: block;
-      padding: 10px;
-      margin: 8px 0;
-      background-color: white;
-      border: 1px solid #ced4da;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .quiz-opcion:hover { background-color: #e9ecef; }
-    .quiz-feedback { margin-top: 10px; padding: 10px; border-radius: 5px; font-weight: bold; display: none; }
-    .quiz-feedback.correcto { background-color: #d4edda; color: #155724; }
-    .quiz-feedback.incorrecto { background-color: #f8d7da; color: #721c24; }
-
-    /* --- PUNTO DE ENCUENTRO DESTACADO (NUEVO) --- */
-    .punto-encuentro-destacado {
-      background: linear-gradient(135deg, #006599 0%, #003366 100%);
-      color: white;
-      padding: 20px;
+    /* --- VIDEO CONTAINER --- */
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* Ratio 16:9 */
+      height: 0;
+      background: #000;
       border-radius: 10px;
+      overflow: hidden;
       margin: 20px 0;
-      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
-    .punto-encuentro-destacado h3 { color: #fff !important; margin-top: 0; }
-
-    /* --- ACCORDEONES --- */
-    details {
-      background-color: #eef5f9;
-      border-left: 4px solid #006599;
-      padding: 10px 15px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      cursor: pointer;
+    .video-wrapper iframe, .video-wrapper video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
     }
-    details summary { font-weight: bold; outline: none; }
 
-    /* --- BOTONES FIJOS (STICKY) --- */
+    /* --- BOTONES --- */
     .nav-buttons {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      background-color: white;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(5px);
       padding: 15px 0;
-      box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
       z-index: 1000;
       display: flex;
       justify-content: center;
@@ -153,225 +139,166 @@
     }
 
     button {
-      background-color: #006599;
+      background: linear-gradient(135deg, #006599 0%, #004d73 100%);
       color: white;
       font-weight: bold;
-      padding: 12px 30px;
+      padding: 12px 35px;
       border: none;
-      border-radius: 25px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      border-radius: 50px;
+      box-shadow: 0 4px 15px rgba(0, 77, 115, 0.3);
       font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
-    button:disabled { background-color: #ccc; }
+    button:active { transform: scale(0.95); }
+    button:disabled { background: #ccc; box-shadow: none; }
 
     /* --- RESPONSIVE --- */
-    @media screen and (max-width: 768px) {
-      .comportamiento-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-      .img-superior-derecha { float: none; display: block; margin: 0 auto 10px auto; text-align: center; }
-      .quiz-container { padding: 15px; }
+    @media screen and (max-width: 600px) {
+      #timer-text { font-size: 14px; }
+      .header-title { display: none; } /* Oculta texto largo en móvil */
+      .container { margin: 15px; padding: 20px; }
     }
-    
-    input[type="checkbox"] { transform: scale(1.3); margin-right: 10px; }
   </style>
 </head>
 <body>
 
+<audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
+<audio id="successSound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3" preload="auto"></audio>
+
 <header>
-  <div><strong>Inducción HSEQ</strong></div>
-  <img src="https://i.postimg.cc/bY006YKT/Logo-PBI.png" alt="Logo PBI" class="logo-pbi">
+  <div class="header-left">
+    <img src="https://i.postimg.cc/bY006YKT/Logo-PBI.png" alt="Logo" class="logo-pbi">
+    <span class="header-title" style="font-weight: bold;">Inducción HSEQ</span>
+  </div>
+  
+  <div id="timer-badge">
+    ⏱️ <span id="timer">00:00</span>
+  </div>
 </header>
+
 <div id="barraProgreso"></div>
 
 <div class="container">
 
   <section class="active">
-    <span class="tiempo-lectura">⏱️ 2 min</span>
     <div style="text-align: center;">
-      <h2>Bienvenido a PBI</h2>
-      <p>Esta inducción garantiza tu seguridad y la nuestra durante tu visita.</p>
-      <div style="text-align: center; margin: 20px 0;">
-        <img src="https://i.postimg.cc/B6GYKPGW/Logo-portada-induccion-corporativa-PBI.png" alt="Portada" style="max-width: 100%; border-radius: 8px;">
+      <h2>👋 Bienvenido a PBI</h2>
+      <p>Prepárate para una inducción rápida e interactiva.</p>
+      
+      <div class="video-wrapper">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/faHop1FcGNE?si=example" title="Video Inducción" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
-      <p class="card">📌 La inducción es <strong>obligatoria</strong>. Al finalizar, deberás presentar una breve evaluación.</p>
+      
+      <p style="font-size: 0.9em; color: #666;">⏳ El cronómetro arriba te indicará cuánto tardas en completar el proceso.</p>
     </div>
   </section>
 
   <section>
-    <span class="tiempo-lectura">⏱️ 1 min</span>
-    <div class="img-superior-derecha">
-      <img src="https://i.postimg.cc/CLSFNhyN/LOGO-PBI-CASCO-BLANCO.png" alt="Personaje">
-    </div>
-    <h2>2. Objetivo</h2>
-    <p>Brindar lineamientos claros para:</p>
-    <ul>
-      <li>✔️ Promover un entorno seguro.</li>
-      <li>✔️ Prevenir accidentes.</li>
-      <li>✔️ Saber actuar en emergencias.</li>
-    </ul>
-  </section>
-
-  <section>
-    <span class="tiempo-lectura">⏱️ 2 min</span>
-    <h2>3. Políticas Corporativas</h2>
-    <p>Documentos clave que rigen nuestro comportamiento:</p>
-    <details>
-      <summary>📌 Política Integral HSEQ</summary>
-      <p>Compromiso con la calidad y la seguridad. <a href="https://drive.google.com/open?id=1To8ksi0_bzYq_hzyExQr8FiCRMw2FOy4" target="_blank">Ver PDF</a></p>
-    </details>
-    <details>
-      <summary>🚫 No Alcohol y Drogas</summary>
-      <p>Ambiente de trabajo libre de sustancias. <a href="https://drive.google.com/open?id=19_eRtxWZ1DvwmY0pnxqImaBqKB7KbdRr" target="_blank">Ver PDF</a></p>
-    </details>
-    <details>
-      <summary>🚗 Seguridad Vial</summary>
-      <p>Movilidad segura dentro y fuera de la empresa. <a href="https://drive.google.com/open?id=1NAmg1SaRJ_Rzt3DeqWVO9znXfWT3OZOA" target="_blank">Ver PDF</a></p>
-    </details>
-  </section>
-
-  <section>
-    <span class="tiempo-lectura">⏱️ 3 min</span>
-    <div class="img-superior-derecha">
-      <img src="https://i.postimg.cc/CLSFNhyN/LOGO-PBI-CASCO-BLANCO.png" alt="Personaje">
-    </div>
-    <h2>4. Riesgos en la Oficina</h2>
-    <div class="comportamiento-grid" style="display: grid; grid-template-columns: 1fr 1fr;">
-      <div class="card"><h4>🔌 Eléctrico</h4>Cables sueltos o sobrecarga.</div>
-      <div class="card"><h4>🪜 Locativo</h4>Pisos mojados o desniveles.</div>
-      <div class="card"><h4>🚶 Golpes</h4>Distracción con celular.</div>
-    </div>
-
-    <div class="quiz-container">
-      <h3 style="margin-top:0;">🧠 Verificación Rápida</h3>
-      <p><strong>¿Qué debes hacer si ves un piso mojado sin señalización?</strong></p>
-      <label class="quiz-opcion"><input type="radio" name="q1" value="a"> Correr para pasar rápido.</label>
-      <label class="quiz-opcion"><input type="radio" name="q1" value="b"> Caminar con cuidado y reportarlo.</label>
-      <label class="quiz-opcion"><input type="radio" name="q1" value="c"> Ignorarlo.</label>
-      <div id="feedback-q1" class="quiz-feedback"></div>
-    </div>
-  </section>
-
-  <section>
-    <span class="tiempo-lectura">⏱️ 2 min</span>
-    <h2>5. Contratistas Locativos</h2>
-    <p>Si vienes a realizar trabajos técnicos:</p>
-    <div class="accordion">
-      <details><summary>📋 Permiso de Trabajo</summary><p>Obligatorio para iniciar labores.</p></details>
-      <details><summary>🦺 EPP Requerido</summary><p>Casco, gafas y botas según la labor.</p></details>
-      <details><summary>🚧 Delimitación</summary><p>Aísla tu zona de trabajo.</p></details>
-    </div>
-    <div style="background:#ffebeb; border-left:5px solid red; padding:10px; margin-top:10px;">
-      <strong>⛔ PROHIBIDO:</strong> Fumar, bloquear salidas o trabajar sin permiso.
-    </div>
-  </section>
-
-  <section>
-    <span class="tiempo-lectura">⏱️ 1 min</span>
-    <h2>6. Gestión Ambiental</h2>
-    <p>Separa los residuos correctamente:</p>
-    <div class="comportamiento-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
-      <div class="card" style="border-left-color:black;"><h4 style="color:black">⚫ Negro</h4>No aprovechables.</div>
-      <div class="card" style="border-left-color:white; border:1px solid #ccc;"><h4 style="color:#666">⚪ Blanco</h4>Reciclables limpios.</div>
-      <div class="card" style="border-left-color:green;"><h4 style="color:green">🟢 Verde</h4>Orgánicos.</div>
-    </div>
-  </section>
-
-  <section>
-    <span class="tiempo-lectura">⏱️ 3 min</span>
-    <h2>7. Plan de Emergencias</h2>
+    <h2>⚠️ Identificación de Riesgos</h2>
+    <p>Selecciona los riesgos que crees que puedes encontrar en la oficina:</p>
     
-    <div class="punto-encuentro-destacado">
-      <h3>📍 PUNTO DE ENCUENTRO</h3>
-      <p>Parqueadero posterior del Centro Comercial Santa Ana.</p>
-    </div>
-
-    <div class="accordion">
-      <details><summary>🔊 Alarma</summary><p>Evacúa inmediatamente sin correr.</p></details>
-      <details><summary>🚫 Ascensores</summary><p>Nunca los uses en emergencia.</p></details>
-      <details><summary>🆘 Brigadistas</summary><p>Sigue instrucciones de los chalecos naranjas.</p></details>
-    </div>
-
-    <div style="text-align: center; margin-top: 15px;">
-        <img src="https://i.postimg.cc/kGj7FnH7/PLANO-OFICINA.png" alt="Plano" style="max-width: 100%; border-radius: 8px;">
-        <p style="font-size:0.8em;">Mapa de evacuación</p>
-    </div>
-
-    <div class="quiz-container">
-      <h3 style="margin-top:0;">🧠 Verificación Rápida</h3>
-      <p><strong>Si suena la alarma, ¿qué haces primero?</strong></p>
-      <label class="quiz-opcion"><input type="radio" name="q2" value="a"> Recoger mis cosas.</label>
-      <label class="quiz-opcion"><input type="radio" name="q2" value="b"> Suspender actividades y evacuar.</label>
-      <div id="feedback-q2" class="quiz-feedback"></div>
+    <div style="display: grid; gap: 10px;">
+        <label class="card" style="cursor: pointer; display: flex; align-items: center;">
+            <input type="checkbox" onclick="playClick()" style="transform: scale(1.5); margin-right: 15px;">
+            <div>
+                <strong>Caídas al mismo nivel</strong>
+                <div style="font-size: 0.85em; color: #666;">Por pisos mojados o cables sueltos.</div>
+            </div>
+        </label>
+        
+        <label class="card" style="cursor: pointer; display: flex; align-items: center;">
+            <input type="checkbox" onclick="playClick()" style="transform: scale(1.5); margin-right: 15px;">
+            <div>
+                <strong>Riesgo Eléctrico</strong>
+                <div style="font-size: 0.85em; color: #666;">Conexiones recargadas o en mal estado.</div>
+            </div>
+        </label>
     </div>
   </section>
 
   <section>
-    <span class="tiempo-lectura">⏱️ 2 min</span>
-    <h2>8. Extintores</h2>
+    <h2>🏢 Nuestra Cultura HSEQ</h2>
+    <p>Mira este breve clip sobre cómo nos cuidamos en PBI:</p>
     
-    <div style="background-color: #fff3cd; border-left: 6px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-      <h4 style="color: #856404; margin-top: 0;">⚠️ IMPORTANTE VISITANTES</h4>
-      <p style="margin-bottom:0;">No manipules extintores. Tu prioridad es <strong>EVACUAR</strong> y avisar a un brigadista.</p>
-    </div>
-
-    <div class="comportamiento-grid" style="display:grid; grid-template-columns: 1fr 1fr;">
-        <div class="card" style="border-left-color: #f9c922;">🟡 <strong>ABC:</strong> Multipropósito.</div>
-        <div class="card">⚪ <strong>Solkaflam:</strong> Equipos de Cómputo (Limpio).</div>
-        <div class="card" style="border-left-color: #cc0000;">🔴 <strong>CO2:</strong> Eléctrico / Líquidos.</div>
-    </div>
-  </section>
-
-  <section>
-    <h2>9. Reporte de Condiciones</h2>
-    <p>Escanea el QR para reportar actos o condiciones inseguras:</p>
-    <div style="text-align: center;">
-        <img class="qr" src="https://i.postimg.cc/0Nhp4dDd/Captura-de-pantalla-2025-06-17-093430.png" alt="QR" style="width:150px;">
+    <div class="video-wrapper" style="background: #1a1a1a; display: flex; align-items: center; justify-content: center; color: white;">
+        <p style="text-align: center; padding: 20px;">
+           ▶️ [Aquí iría el video generado por IA o Corporativo]<br>
+           <small>Reemplaza este texto con la etiqueta &lt;video&gt;</small>
+        </p>
     </div>
   </section>
 
   <section id="seccion-verificacion">
-    <div class="img-superior-derecha">
-        <img src="https://i.postimg.cc/CLSFNhyN/LOGO-PBI-CASCO-BLANCO.png" alt="Personaje">
-    </div>
-    <h2>10. Verificación Final</h2>
-    <p>Confirma tu compromiso antes de ingresar:</p>
-    
+    <h2>✅ Compromiso Final</h2>
+    <p>Para terminar, confirma:</p>
     <div class="card">
       <ul style="list-style: none; padding: 0;">
-        <li><label><input type="checkbox"> ✅ Entiendo los riesgos y normas.</label></li>
-        <li><label><input type="checkbox"> ✅ Identifiqué las rutas de evacuación.</label></li>
-        <li><label><input type="checkbox"> ✅ Sé dónde está el punto de encuentro.</label></li>
-        <li><label><input type="checkbox"> ✅ Me comprometo a cumplir las pautas.</label></li>
+        <li style="margin-bottom: 10px;">
+            <label><input type="checkbox" onclick="playClick()"> Entendí los riesgos.</label>
+        </li>
+        <li style="margin-bottom: 10px;">
+            <label><input type="checkbox" onclick="playClick()"> Conozco el punto de encuentro.</label>
+        </li>
+        <li>
+            <label><input type="checkbox" onclick="playClick()"> Reportaré actos inseguros.</label>
+        </li>
       </ul>
     </div>
-    <p id="msg-error" style="color: red; display: none; text-align: center; font-weight: bold;">⚠️ Marca todas las casillas para continuar.</p>
+    <p id="msg-error" style="color: #d9534f; display: none; font-weight: bold; text-align: center;">⚠️ Falta confirmar algunos puntos.</p>
   </section>
 
   <section>
-    <div style="text-align: center;">
-      <img src="https://i.postimg.cc/bY006YKT/Logo-PBI.png" alt="Logo" style="width: 120px;">
-      <h2>¡Inducción Completada!</h2>
-      <p>Gracias por tu tiempo. Por favor, realiza la evaluación final para registrar tu ingreso.</p>
+    <div style="text-align: center; padding: 30px 0;">
+      <h1 style="font-size: 3em; margin: 0;">🎉</h1>
+      <h2>¡Excelente trabajo!</h2>
+      <p>Completaste la inducción en:</p>
+      <div style="font-size: 2em; font-weight: bold; color: #007BFF; margin: 10px 0;" id="tiempo-final">00:00</div>
       
-      <a href="https://forms.gle/dYWQrnwranyo6eEU9" target="_blank" 
-         style="display: inline-block; background: #28a745; color: white; padding: 15px 30px; border-radius: 8px; font-size: 18px; margin-top: 20px; box-shadow: 0 4px 10px rgba(40,167,69,0.3);">
-         📝 Ir a la Evaluación
-      </a>
+      <button onclick="window.open('https://forms.gle/dYWQrnwranyo6eEU9', '_blank')" style="background: #28a745; margin-top: 20px;">
+        📝 Ir a Evaluación
+      </button>
     </div>
   </section>
 
-</div> <div class="nav-buttons">
-  <button id="btnAnterior" onclick="prevSection()">Anterior</button>
-  <button id="btnSiguiente" onclick="nextSection()">Siguiente</button>
+</div>
+
+<div class="nav-buttons">
+  <button id="btnAnterior" onclick="changeSection(-1)">Anterior</button>
+  <button id="btnSiguiente" onclick="changeSection(1)">Siguiente</button>
 </div>
 
 <script>
+  // --- VARIABLES ---
   let current = 0;
   const sections = document.querySelectorAll("section");
   const btnAnterior = document.getElementById("btnAnterior");
   const btnSiguiente = document.getElementById("btnSiguiente");
   const barra = document.getElementById("barraProgreso");
-  const errorMsg = document.getElementById("msg-error");
+  const audioClick = document.getElementById("clickSound");
+  const audioSuccess = document.getElementById("successSound");
+  
+  // --- LOGICA DEL CRONÓMETRO ---
+  let seconds = 0;
+  let timerInterval;
 
+  function startTimer() {
+    timerInterval = setInterval(() => {
+        seconds++;
+        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const secs = (seconds % 60).toString().padStart(2, '0');
+        document.getElementById("timer").textContent = `${mins}:${secs}`;
+    }, 1000);
+  }
+
+  // --- LOGICA DE SONIDO ---
+  function playClick() {
+    // Reinicia el audio para que suene rápido si haces click seguido
+    audioClick.currentTime = 0;
+    audioClick.play().catch(e => console.log("Audio bloqueado por navegador hasta interacción"));
+  }
+
+  // --- NAVEGACIÓN ---
   function updateView() {
     sections.forEach((s, i) => {
       s.classList.toggle("active", i === current);
@@ -379,8 +306,13 @@
 
     btnAnterior.style.display = (current === 0) ? "none" : "block";
     
+    // Botón Siguiente / Finalizar
     if (current === sections.length - 1) {
-        btnSiguiente.style.display = "none"; // En la última sección (cierre) se oculta el siguiente
+        btnSiguiente.style.display = "none";
+        // Detener cronómetro y mostrar tiempo final
+        clearInterval(timerInterval);
+        document.getElementById("tiempo-final").textContent = document.getElementById("timer").textContent;
+        audioSuccess.play(); // Sonido de victoria al final
     } else {
         btnSiguiente.style.display = "block";
         btnSiguiente.textContent = (current === sections.length - 2) ? "Finalizar" : "Siguiente";
@@ -389,63 +321,38 @@
     const progreso = ((current + 1) / sections.length) * 100;
     barra.style.width = progreso + "%";
     
-    // Scroll suave arriba
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function nextSection() {
-    // VALIDACIÓN CHECKBOXES (Usando ID robusto)
-    const seccionVerificacion = document.getElementById("seccion-verificacion");
-    
-    if (sections[current] === seccionVerificacion) {
-        const checks = seccionVerificacion.querySelectorAll("input[type='checkbox']");
-        let todosMarcados = true;
-        checks.forEach(c => { if (!c.checked) todosMarcados = false; });
+  function changeSection(direction) {
+    playClick(); // Suena el clic
 
-        if (!todosMarcados) {
-            errorMsg.style.display = "block";
-            return;
-        } else {
-            errorMsg.style.display = "none";
+    // Validación si va hacia adelante
+    if (direction === 1) {
+        const seccionVerificacion = document.getElementById("seccion-verificacion");
+        if (sections[current] === seccionVerificacion) {
+            const checks = seccionVerificacion.querySelectorAll("input[type='checkbox']");
+            let allChecked = true;
+            checks.forEach(c => { if(!c.checked) allChecked = false; });
+            
+            if (!allChecked) {
+                document.getElementById("msg-error").style.display = "block";
+                navigator.vibrate?.(200); // Vibrar celular si hay error
+                return; 
+            }
         }
     }
 
-    if (current < sections.length - 1) {
-      current++;
+    if ((current + direction) >= 0 && (current + direction) < sections.length) {
+      current += direction;
       updateView();
     }
   }
 
-  function prevSection() {
-    if (current > 0) {
-      current--;
-      updateView();
-    }
-  }
-
-  // LÓGICA DE QUIZZES
-  function initQuiz(preguntaName, respuestaCorrecta, feedbackId) {
-    const opciones = document.getElementsByName(preguntaName);
-    const feedback = document.getElementById(feedbackId);
-
-    opciones.forEach(op => {
-        op.addEventListener('change', function() {
-            if(this.value === respuestaCorrecta) {
-                feedback.innerHTML = "✅ ¡Correcto!";
-                feedback.className = "quiz-feedback correcto";
-            } else {
-                feedback.innerHTML = "❌ Incorrecto. Intenta de nuevo.";
-                feedback.className = "quiz-feedback incorrecto";
-            }
-            feedback.style.display = "block";
-        });
-    });
-  }
-
+  // INICIO
   document.addEventListener("DOMContentLoaded", () => {
     updateView();
-    initQuiz('q1', 'b', 'feedback-q1');
-    initQuiz('q2', 'b', 'feedback-q2');
+    startTimer(); // Inicia el reloj apenas carga
   });
 </script>
 
